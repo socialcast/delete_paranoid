@@ -12,15 +12,15 @@ Soft Delete ActiveRecord instances.
 
 == Features
 
-== Contributing to elastic_searchable
+== Contributing
 
 * Fork the project
 * Fix the issue
-* Submit a pull request
+* Submit a pull request on github
 
 == Patch acceptance criteria
 
-* tests must be included for the submitted request
+* tests must be included
 
 == Copyright
 
