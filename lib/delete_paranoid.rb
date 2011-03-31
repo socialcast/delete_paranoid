@@ -1,0 +1,3 @@
+module DeleteParanoid
+  # Your code goes here...
+end
