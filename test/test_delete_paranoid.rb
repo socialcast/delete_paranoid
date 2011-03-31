@@ -9,9 +9,15 @@ class TestDeleteParanoid < Test::Unit::TestCase
       assert Blog.respond_to? :delete_all!
     end
     context 'when on instance destroyed' do
-      should 'not be included in total count' do
-        fail
+      setup do
+        @blog = Blog.create! :title => 'foo'
+        @blog.destroy
+      end
+      should 'not be included in all results' do
+        assert !Blog.all.include?(@blog)
       end
     end
+
+    should 'fire destroy callbacks'
   end
 end
