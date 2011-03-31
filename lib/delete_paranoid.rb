@@ -4,7 +4,7 @@ module DeleteParanoid
   module ActiveRecordExtensions
     def acts_as_paranoid
       class << self
-        alias_method :delete_all!, :delete_all
+        alias_method :destroy!, :destroy
       end
       default_scope where(:deleted_at => nil)
       include DeleteParanoid::InstanceMethods
@@ -19,8 +19,17 @@ module DeleteParanoid
     end
   end
   module InstanceMethods
-    def delete_all(conditions = nil)
-      self.update_all ["deleted_at = ?", Time.now.utc], conditions
+    def destroy
+      if persisted?
+        with_transaction_returning_status do
+          _run_destroy_callbacks do
+            update_attributes(:deleted_at => Time.now.utc)
+          end
+        end
+      end
+
+      @destroyed = true
+      freeze
     end
   end
 end
