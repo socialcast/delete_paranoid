@@ -1,0 +1,29 @@
+= delete_paranoid
+
+Soft Delete ActiveRecord instances.
+
+== Usage
+  class Blog < ActiveRecord::Base
+    acts_as_paranoid
+  end
+
+  blog = Blog.create :name => 'foo'
+  blog.destroy #soft delete the record
+
+== Features
+
+== Contributing to elastic_searchable
+
+* Fork the project
+* Fix the issue
+* Submit a pull request
+
+== Patch acceptance criteria
+
+* tests must be included for the submitted request
+
+== Copyright
+
+Copyright (c) 2011 Ryan Sonnek. See LICENSE.txt for
+further details.
+

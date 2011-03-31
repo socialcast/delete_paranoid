@@ -2,3 +2,7 @@
 .bundle
 Gemfile.lock
 pkg/*
+
+#test resources
+test/*.log
+test/*.sqlite3
