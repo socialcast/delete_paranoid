@@ -24,7 +24,8 @@ module DeleteParanoid
       if persisted?
         with_transaction_returning_status do
           _run_destroy_callbacks do
-            self.class.update_all ["deleted_at = ?", Time.now.utc], { :id => self.id }
+            self.deleted_at = Time.now.utc
+            self.class.update_all ["deleted_at = ?", self.deleted_at ], { :id => self.id }
             @destroyed = true
           end
         end
