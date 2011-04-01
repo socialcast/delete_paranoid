@@ -3,6 +3,7 @@ require File.join(File.dirname(__FILE__), 'helper')
 class TestDeleteParanoid < Test::Unit::TestCase
   class Blog < ActiveRecord::Base
     acts_as_paranoid
+    attr_accessible :title
     include CallbackTester
   end
   
