@@ -6,6 +6,7 @@ module DeleteParanoid
       class << self
         alias_method :destroy!, :destroy
       end
+      alias_method :destroy!, :destroy
       default_scope where(:deleted_at => nil)
       include DeleteParanoid::InstanceMethods
       extend DeleteParanoid::ClassMethods
