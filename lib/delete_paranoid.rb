@@ -12,7 +12,7 @@ module DeleteParanoid
     end
   end
   module ClassMethods
-    def with_deleted(&block)
+    def with_deleted
       self.unscoped do
         yield
       end
