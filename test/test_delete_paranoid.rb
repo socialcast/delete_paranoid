@@ -9,6 +9,7 @@ class TestDeleteParanoid < Test::Unit::TestCase
 
   class Comment < ActiveRecord::Base
     acts_as_paranoid
+    attr_accessible :title
     include CallbackTester
   end
   
