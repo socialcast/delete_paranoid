@@ -52,7 +52,7 @@ class TestDeleteParanoid < Test::Unit::TestCase
       should_not_trigger_update_callbacks :blog
       
       should_soft_destroy :comment
-      # should_trigger_destroy_callbacks :comment
+      should_trigger_destroy_callbacks :comment
       # should_not_trigger_update_callbacks :comment
     end
     
@@ -80,7 +80,7 @@ class TestDeleteParanoid < Test::Unit::TestCase
        should_trigger_destroy_callbacks :blog
        should_not_trigger_update_callbacks :blog
        # should_hard_destroy :comment
-       # should_trigger_destroy_callbacks :comment
+       should_trigger_destroy_callbacks :comment
        # should_not_trigger_update_callbacks :comment
      end
     
