@@ -14,11 +14,19 @@ class TestDeleteParanoid < Test::Unit::TestCase
     include CallbackTester
   end
   
-  context 'with paranoid class' do
-    should 'have destroy! method' do
-      assert Blog.respond_to? :destroy!
+  context 'with paranoid instance' do
+    setup do
+      @blog = Blog.new
     end
-    
+    should 'have destroy! method' do
+      assert @blog.respond_to? :destroy!
+    end
+  end
+  context 'with paranoid class' do
+    should 'have delete_all! method' do
+      assert Blog.respond_to? :delete_all!
+    end
+
     context 'when on instance destroyed softly' do
       setup do
         @blog = Blog.create! :title => 'foo'

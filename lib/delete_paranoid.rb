@@ -4,7 +4,6 @@ module DeleteParanoid
   module ActiveRecordExtensions
     def acts_as_paranoid
       class << self
-        alias_method :destroy!, :destroy
         alias_method :delete_all!, :delete_all
       end
       alias_method :destroy!, :destroy
