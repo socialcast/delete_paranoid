@@ -11,10 +11,6 @@ module DeleteParanoid
       extend DeleteParanoid::ClassMethods
       include DeleteParanoid::InstanceMethods  
     end
-    
-    def paranoid?
-      self.included_modules.include?(InstanceMethods)
-    end
   end
   
   module ClassMethods
