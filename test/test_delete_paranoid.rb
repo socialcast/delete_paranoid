@@ -48,11 +48,12 @@ class TestDeleteParanoid < Test::Unit::TestCase
       end
 
       should_soft_destroy :blog
-      should_soft_destroy :comment
       should_trigger_destroy_callbacks :blog
       should_not_trigger_update_callbacks :blog
-      should_trigger_destroy_callbacks :comment
-      should_not_trigger_update_callbacks :comment
+      
+      should_soft_destroy :comment
+      # should_trigger_destroy_callbacks :comment
+      # should_not_trigger_update_callbacks :comment
     end
     
     context "when on instance destroyed hardly" do
@@ -76,11 +77,11 @@ class TestDeleteParanoid < Test::Unit::TestCase
        end
 
        should_hard_destroy :blog
-       should_hard_destroy :comment
        should_trigger_destroy_callbacks :blog
        should_not_trigger_update_callbacks :blog
-       should_trigger_destroy_callbacks :comment
-       should_not_trigger_update_callbacks :comment
+       # should_hard_destroy :comment
+       # should_trigger_destroy_callbacks :comment
+       # should_not_trigger_update_callbacks :comment
      end
     
   end
