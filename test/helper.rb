@@ -29,13 +29,13 @@ class Test::Unit::TestCase
     should "freeze #{subject}" do
       assert instance_variable_get(:"@#{subject}").frozen?
     end
-    should "not be found normally" do
+    should "not find #{subject} normally" do
       destroyed_subject = instance_variable_get(:"@#{subject}")
       assert_raises ActiveRecord::RecordNotFound do
         destroyed_subject.class.find destroyed_subject.id
       end
     end
-    should "be found when in with_deleted block" do
+    should "find #{subject} in with_deleted block" do
       destroyed_subject = instance_variable_get(:"@#{subject}")
       destroyed_subject.class.with_deleted do
         assert_nothing_raised ActiveRecord::RecordNotFound do
@@ -46,13 +46,13 @@ class Test::Unit::TestCase
   end
   
   def self.should_hard_destroy(subject)
-    should "not be retrievable" do
+    should "not find #{subject} normally" do
       destroyed_subject = instance_variable_get(:"@#{subject}")
       assert_raises ActiveRecord::RecordNotFound do
         destroyed_subject.class.find destroyed_subject.id
       end
     end
-    should "not be retrievable in with_deleted block" do
+    should "not find #{subject} in with_deleted block" do
       destroyed_subject = instance_variable_get(:"@#{subject}")
       destroyed_subject.class.with_deleted do
         assert_raises ActiveRecord::RecordNotFound do
