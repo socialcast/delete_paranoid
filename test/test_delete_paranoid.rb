@@ -3,75 +3,150 @@ require File.join(File.dirname(__FILE__), 'helper')
 class TestDeleteParanoid < Test::Unit::TestCase
   class Blog < ActiveRecord::Base
     has_many :comments, :dependent => :destroy
+    has_many :links
     acts_as_paranoid
     attr_accessible :title
-    include CallbackTester
+    include CallbackMatcher::ActiveRecordHooks
   end
 
   class Comment < ActiveRecord::Base
     acts_as_paranoid
     attr_accessible :text
-    include CallbackTester
+    belongs_to :blog
+    include CallbackMatcher::ActiveRecordHooks
+  end
+  
+  class Link < ActiveRecord::Base
+    belongs_to :blog
+  end
+  
+  context "with non-paranoid class" do
+    should "have paranoid? but not be paranoid" do
+      assert Link.respond_to? :paranoid?
+      assert !Link.paranoid?
+    end
   end
   
   context 'with paranoid class' do
-    should 'have destroy! method' do
-      assert Blog.respond_to? :destroy!
+    should 'have have new class methods methods' do
+      [:destroy, :delete!, :destroy_all!, :delete_all!].each do |method|
+        assert Blog.respond_to? method
+      end  
+    end
+    should "have new instance methods" do
+      [:destroy!, :delete!].each do |method|
+        assert Blog.new.respond_to? method
+      end
     end
     
-    context 'when on instance destroyed softly' do
+    context "an instance of the class" do
       setup do
-        @blog = Blog.create! :title => 'foo'
-        @blog.destroy
+        @blog = Blog.create!(:title => 'foo')
       end
       
-      should_soft_destroy :blog
-      should_trigger_destroy_callbacks :blog
-      should_not_trigger_update_callbacks :blog
+      context 'is destroyed softly' do
+        subject { @blog.destroy; @blog }
+        should soft_destroy
+        should trigger_callbacks_for :destroy
+        should_not trigger_callbacks_for :update
+      end
+      
+      context 'is deleted softly' do
+        subject { @blog.delete; @blog }
+        should soft_destroy
+        should_not trigger_callbacks_for :destroy
+        should_not trigger_callbacks_for :update
+      end
+      
+      context "is destroyed hardly" do
+        subject { @blog.destroy!; @blog }
+        should hard_destroy
+        should trigger_callbacks_for :destroy
+        should_not trigger_callbacks_for :update
+      end
+      
+      context "is deleted hardly" do
+        subject { @blog.delete!; @blog }
+        should hard_destroy
+        should_not trigger_callbacks_for :destroy
+        should_not trigger_callbacks_for :update
+      end
+      
     end
     
-    context 'when an instance with dependents is destroyed softly' do
+    context 'instance with a dependent' do
       setup do
         @blog = Blog.create!(:title => 'foo')
         @comment = @blog.comments.create! :text => 'bar'
-        @blog.destroy
       end
-
-      should_soft_destroy :blog
-      should_trigger_destroy_callbacks :blog
-      should_not_trigger_update_callbacks :blog
       
-      should_soft_destroy :comment
-      should_trigger_destroy_callbacks :comment
-      should_not_trigger_update_callbacks :comment
-    end
-    
-    context "when on instance destroyed hardly" do
-      setup do
-        @blog = Blog.create! :title => 'foo'
-        @blog.destroy!
+      context "destroyed softly" do
+        setup { @blog.destroy }
+        context "the instance" do
+          subject { @blog }
+          should soft_destroy
+          should trigger_callbacks_for :destroy
+          should_not trigger_callbacks_for :update
+        end
+
+        context "the dependent" do
+          subject { @comment }
+          should soft_destroy
+          should trigger_callbacks_for :destroy
+          should_not trigger_callbacks_for :update
+        end
       end
+      
+      context "deleted softly" do
+        setup { @blog.delete }
+        context "the instance" do
+          subject { @blog }
+          should soft_destroy
+          should_not trigger_callbacks_for :destroy
+          should_not trigger_callbacks_for :update
+        end
 
-      should_hard_destroy :blog
-      should_trigger_destroy_callbacks :blog
-      should_not_trigger_update_callbacks :blog
+        context "the dependent" do
+          subject { @comment }
+          should_not soft_destroy
+          should_not trigger_callbacks_for :destroy
+          should_not trigger_callbacks_for :update
+        end
+      end
+      
+      context "destroyed hardly" do
+        setup { @blog.destroy! }
+        context "the instance" do
+          subject { @blog }
+          should hard_destroy
+          should trigger_callbacks_for :destroy
+          should_not trigger_callbacks_for :update
+        end
+
+        context "the dependent" do
+          subject { @comment }
+          should hard_destroy
+          should trigger_callbacks_for :destroy
+          should_not trigger_callbacks_for :update
+        end
+      end
+      
+      context "deleted hardly" do
+        setup { @blog.delete! }
+        context "the instance" do
+          subject { @blog }
+          should hard_destroy
+          should_not trigger_callbacks_for :destroy
+          should_not trigger_callbacks_for :update
+        end
+
+        context "the dependent" do
+          subject { @comment }
+          should_not hard_destroy
+          should_not trigger_callbacks_for :destroy
+          should_not trigger_callbacks_for :update
+        end
+      end
     end
-    
-    context 'when an instance with dependents is destroyed hardly' do
-       setup do
-         @blog = Blog.create!(:title => 'foo')
-         @comment = @blog.comments.create! :text => 'bar'
-         @blog.destroy!
-       end
-
-       should_hard_destroy :blog
-       should_trigger_destroy_callbacks :blog
-       should_not_trigger_update_callbacks :blog
-       
-       should_hard_destroy :comment
-       should_trigger_destroy_callbacks :comment
-       should_not_trigger_update_callbacks :comment
-     end
-    
   end
 end

@@ -5,6 +5,7 @@ module DeleteParanoid
     def acts_as_paranoid
       class << self
         alias_method :destroy!, :destroy
+        alias_method :delete!, :delete
         alias_method :delete_all!, :delete_all
       end
       alias_method :delete!, :delete
@@ -37,7 +38,6 @@ module DeleteParanoid
         to_a.each {|object| object.destroy! }.tap { reset }
       end
     end
-
   end
   
   module InstanceMethods
@@ -77,6 +77,7 @@ module DeleteParanoid
       freeze        
     end
     
+  private
     def enable_hard_dependent_destroy_callbacks
       eigenclass = class << self; self; end
       self.class.reflect_on_all_associations.each do |reflection|
