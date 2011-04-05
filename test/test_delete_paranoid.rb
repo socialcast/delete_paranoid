@@ -5,14 +5,14 @@ class TestDeleteParanoid < Test::Unit::TestCase
     has_many :comments, :dependent => :destroy
     acts_as_paranoid
     attr_accessible :title
-    include CallbackTester
+    include CallbackMatcher::ActiveRecordHooks
   end
 
   class Comment < ActiveRecord::Base
     acts_as_paranoid
     attr_accessible :text
     belongs_to :blog
-    include CallbackTester
+    include CallbackMatcher::ActiveRecordHooks
   end
 
   class User < ActiveRecord::Base
@@ -28,7 +28,7 @@ class TestDeleteParanoid < Test::Unit::TestCase
     end
   end
   context 'with instance of paranoid class' do
-    setup do
+    subject do
       @blog = Blog.create! :title => 'foo'
     end
     context 'when destroying instance' do
@@ -39,9 +39,9 @@ class TestDeleteParanoid < Test::Unit::TestCase
         end
       end
       
-      should_soft_destroy :blog
-      should_trigger_destroy_callbacks :blog
-      should_not_trigger_update_callbacks :blog
+      should soft_destroy
+      should trigger_callbacks_for :destroy
+      should_not trigger_callbacks_for :update
       should 'save deleted_at timestamp on database record' do
         blog = Blog.find_by_sql(['SELECT deleted_at FROM blogs WHERE id = ?', @blog.id]).first
         assert_not_nil blog
@@ -71,40 +71,37 @@ class TestDeleteParanoid < Test::Unit::TestCase
         @blog = Blog.create! :title => 'foo'
         Blog.where({:id => @blog.id}).delete_all!
       end
-      should_hard_destroy :blog
+      should hard_destroy
     end
     context "when destroying instance with delete!" do
       setup do
         @blog = Blog.create! :title => 'foo'
         Blog.delete! @blog.id
       end
-      should_hard_destroy :blog
+      should hard_destroy
     end
   end
 
-  context 'with paranoid instance that has dependents' do
-    setup do
+  context 'with paranoid instance that has belongs to paranoid instance' do
+    subject do
       @blog = Blog.create!(:title => 'foo')
       @comment = @blog.comments.create! :text => 'bar'
     end
-    context 'when destroying paranoid instance' do
+    context 'when destroying parent paranoid instance with destroy' do
       setup do
         @blog.destroy
       end
 
-      should_soft_destroy :blog
-      should_trigger_destroy_callbacks :blog
-      should_not_trigger_update_callbacks :blog
-      
-      should_soft_destroy :comment
-      should_trigger_destroy_callbacks :comment
+      should soft_destroy
+      should trigger_callbacks_for :destroy
+      #should_not trigger_callbacks_for :update
     end
-    context 'when destroying paranoid instance with delete_all!' do
+    context 'when destroying parent paranoid instance with delete_all!' do
        setup do
          Blog.where({:id => @blog.id}).delete_all!
        end
 
-       should_hard_destroy :blog
+       should hard_destroy
        should 'not destroy associated comment' do
          assert_not_nil @comment.reload
          assert_nil @comment.blog
@@ -112,3 +109,4 @@ class TestDeleteParanoid < Test::Unit::TestCase
      end
   end
 end
+
