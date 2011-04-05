@@ -11,6 +11,7 @@ class TestDeleteParanoid < Test::Unit::TestCase
   class Comment < ActiveRecord::Base
     acts_as_paranoid
     attr_accessible :text
+    belongs_to :blog
     include CallbackTester
   end
 
@@ -80,6 +81,10 @@ class TestDeleteParanoid < Test::Unit::TestCase
        end
 
        should_hard_destroy :blog
+       should 'not destroy associated comment' do
+         assert_not_nil @comment.reload
+         assert_nil @comment.blog
+       end
      end
     
   end
