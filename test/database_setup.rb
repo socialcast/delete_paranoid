@@ -14,5 +14,9 @@ ActiveRecord::Schema.define(:version => 2) do
     t.column :text, :string
     t.column :deleted_at, :timestamp
   end
+  create_table :links, :force => true do |t|
+    t.column :blog_id, :integer
+    t.column :name, :string
+  end
 end
 
