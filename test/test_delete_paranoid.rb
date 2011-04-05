@@ -37,7 +37,7 @@ class TestDeleteParanoid < Test::Unit::TestCase
       should_soft_destroy :blog
       should_trigger_destroy_callbacks :blog
       should_not_trigger_update_callbacks :blog
-      should 'save deleted_at on database record' do
+      should 'save deleted_at timestamp on database record' do
         blog = Blog.find_by_sql(['SELECT deleted_at FROM blogs WHERE id = ?', @blog.id]).first
         assert_not_nil blog
         assert_not_nil blog.deleted_at
