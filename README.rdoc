@@ -6,13 +6,25 @@ Soft Delete ActiveRecord instances.
   class Blog < ActiveRecord::Base
     acts_as_paranoid
   end
+  blog = Blog.create! :name => 'foo'
 
-  blog = Blog.create :name => 'foo'
-  blog.destroy #soft delete the record
+  # soft delete the instance
+  blog.destroy
 
-  Blog.delete! blog.id #hard delete the record
+  # query database for results *including* soft deleted objects
+  Blog.with_deleted do
+    Blog.all
+  end
+
+  # permenantly delete the instance from the database
+  Blog.delete! blog.id
 
 == Features
+* simple configuration
+* preserves existing ActiveRecord API.  No magical new API's to use when you want to soft delete a record
+* automatically exclude soft deleted records from database queries (by default)
+* support for querying database for all records (including soft deleted ones)
+* support for permenantly deleting record from database
 
 == Contributing
 
