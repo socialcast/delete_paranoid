@@ -37,7 +37,7 @@ class Test::Unit::TestCase
       destroyed_subject = instance_variable_get(:"@#{subject}")
       destroyed_subject.class.with_deleted do
         assert_nothing_raised ActiveRecord::RecordNotFound do
-          destroyed_subject.class.find destroyed_subject.id
+          assert_not_nil destroyed_subject.class.find destroyed_subject.id
         end
       end
     end
