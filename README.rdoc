@@ -8,9 +8,14 @@ Soft Delete ActiveRecord instances.
   end
 
   blog = Blog.create :name => 'foo'
-  blog.destroy #soft delete the record
+  blog.destroy  #soft destroy the record
+  blog.destroy! #hard destroy the record
 
 == Features
+
+* Supports soft-destroying and hard-destroying to associations marked as :dependent => :destroy
+* Triggers destroy callbacks during soft-destroy
+* Supports hard and soft delete
 
 == Contributing
 
