@@ -14,18 +14,7 @@ class TestDeleteParanoid < Test::Unit::TestCase
     include CallbackTester
   end
   
-  context 'with paranoid instance' do
-    setup do
-      @blog = Blog.new
-    end
-    should 'have destroy! method' do
-      assert @blog.respond_to? :destroy!
-    end
-  end
   context 'with paranoid class' do
-    should 'have delete_all! method' do
-      assert Blog.respond_to? :delete_all!
-    end
 
     context 'when on instance destroyed softly' do
       setup do
@@ -56,10 +45,10 @@ class TestDeleteParanoid < Test::Unit::TestCase
       # should_not_trigger_update_callbacks :comment
     end
     
-    context "when on instance destroyed hardly" do
+    context "when on instance deleted hardly" do
       setup do
         @blog = Blog.create! :title => 'foo'
-        @blog.destroy!
+        Blog.where({:id => @blog.id}).delete_all!
       end
 
       should_hard_destroy :blog
@@ -73,7 +62,7 @@ class TestDeleteParanoid < Test::Unit::TestCase
          @blog = Blog.create!(:title => 'foo').tap do |blog|
            blog.comments << @comment
          end
-         @blog.destroy!
+         Blog.where({:id => @blog.id}).delete_all!
        end
 
        should_hard_destroy :blog

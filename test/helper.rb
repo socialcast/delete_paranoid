@@ -21,7 +21,7 @@ class Test::Unit::TestCase
   
   def self.should_soft_destroy(subject)
     should "assign deleted_at on #{subject}" do
-      assert_not_nil instance_variable_get(:"@#{subject}").deleted_at
+      assert_not_nil instance_variable_get(:"@#{subject}").read_attribute(:deleted_at)
     end
     should "set #{subject} to destroyed" do
       assert instance_variable_get(:"@#{subject}").destroyed?

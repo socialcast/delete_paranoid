@@ -1,53 +1,40 @@
+require 'active_support/all'
 require 'active_record'
+
+
+class Object
+  def self.paranoid?
+    false
+  end
+end
+
+module ActiveRecord
+  class Relation
+    alias_method :delete_all!, :delete_all
+    def delete_all(conditions = nil)
+      delete_all!(conditions) unless @klass.paranoid?
+      update_all({:deleted_at => Time.now.utc}, conditions)
+    end
+  end
+end
 
 module DeleteParanoid
   module ActiveRecordExtensions
     def acts_as_paranoid
-      class << self
-        alias_method :delete_all!, :delete_all
-      end
-      alias_method :destroy!, :destroy
       default_scope where(:deleted_at => nil)
+
       extend DeleteParanoid::ClassMethods
-      include DeleteParanoid::InstanceMethods  
     end
   end
-  
+
   module ClassMethods
     def with_deleted
       self.unscoped do
         yield
       end
     end
-    
-    def delete_all(conditions = nil)
-      update_all ["deleted_at = ?", Time.now.utc], conditions
-    end
-
-    def destroy_all!(conditions = nil)
-      if conditions
-        where(conditions).destroy_all!
-      else
-        to_a.each {|object| object.destroy! }.tap { reset }
-      end
-    end
-  end
-  
-  module InstanceMethods
-    def destroy
-      if persisted?
-        with_transaction_returning_status do
-          _run_destroy_callbacks do
-            self.deleted_at = Time.now.utc
-            self.class.delete_all :id => self.id
-            @destroyed = true
-          end
-        end
-      else
-        @destroyed = true
-      end
-      
-      freeze
+    def paranoid?
+      true
     end
   end
 end
