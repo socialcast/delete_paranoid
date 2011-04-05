@@ -73,6 +73,13 @@ class TestDeleteParanoid < Test::Unit::TestCase
       end
       should_hard_destroy :blog
     end
+    context "when destroying instance with delete!" do
+      setup do
+        @blog = Blog.create! :title => 'foo'
+        Blog.delete! @blog.id
+      end
+      should_hard_destroy :blog
+    end
   end
 
   context 'with paranoid instance that has dependents' do

@@ -25,6 +25,11 @@ module DeleteParanoid
   end
 
   module ClassMethods
+    # permenantly delete the record from the database
+    def delete!(id_or_array)
+      where(self.primary_key => id_or_array).delete_all!
+    end
+    # allow for queries within block to find soft deleted records
     def with_deleted
       self.unscoped do
         yield
