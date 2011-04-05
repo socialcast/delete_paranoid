@@ -1,13 +1,6 @@
 require 'active_support/all'
 require 'active_record'
 
-
-class Object
-  def self.paranoid?
-    false
-  end
-end
-
 module ActiveRecord
   class Relation
     alias_method :delete_all!, :delete_all
@@ -24,6 +17,10 @@ module DeleteParanoid
       default_scope where(:deleted_at => nil)
 
       extend DeleteParanoid::ClassMethods
+    end
+
+    def paranoid?
+      false
     end
   end
 

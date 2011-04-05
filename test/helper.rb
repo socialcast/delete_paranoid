@@ -11,6 +11,7 @@ require 'test/unit'
 require 'shoulda'
 require 'mocha'
 require "ruby-debug"
+require 'timecop'
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
@@ -20,22 +21,19 @@ require 'database_setup'
 class Test::Unit::TestCase
   
   def self.should_soft_destroy(subject)
-    should "assign deleted_at on #{subject}" do
-      assert_not_nil instance_variable_get(:"@#{subject}").read_attribute(:deleted_at)
-    end
     should "set #{subject} to destroyed" do
       assert instance_variable_get(:"@#{subject}").destroyed?
     end
     should "freeze #{subject}" do
       assert instance_variable_get(:"@#{subject}").frozen?
     end
-    should "not be found normally" do
+    should "not find #{subject} normally" do
       destroyed_subject = instance_variable_get(:"@#{subject}")
       assert_raises ActiveRecord::RecordNotFound do
         destroyed_subject.class.find destroyed_subject.id
       end
     end
-    should "be found when in with_deleted block" do
+    should "find #{subject} when in with_deleted block" do
       destroyed_subject = instance_variable_get(:"@#{subject}")
       destroyed_subject.class.with_deleted do
         assert_nothing_raised ActiveRecord::RecordNotFound do
@@ -46,13 +44,13 @@ class Test::Unit::TestCase
   end
   
   def self.should_hard_destroy(subject)
-    should "not be retrievable" do
+    should "not find #{subject} normally" do
       destroyed_subject = instance_variable_get(:"@#{subject}")
       assert_raises ActiveRecord::RecordNotFound do
         destroyed_subject.class.find destroyed_subject.id
       end
     end
-    should "not be retrievable in with_deleted block" do
+    should "not find #{subject} in with_deleted block" do
       destroyed_subject = instance_variable_get(:"@#{subject}")
       destroyed_subject.class.with_deleted do
         assert_raises ActiveRecord::RecordNotFound do
