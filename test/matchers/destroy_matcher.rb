@@ -29,8 +29,8 @@ module DeleteParanoid
       @errors << "was found in database" if subject_found?
       @errors << "was not found with_deleted in database" if softly? && !subject_found_with_deleted?
       @errors << "did not populate deleted_at timestamp" if softly? && !subject_deleted_at?
-      @errors << "did not freeze instance" if frozen? && !subject.frozen?
-      @errors << "did not destroy instance" if destroyed? && !subject.destroyed?
+      @errors << "did not freeze instance" if frozen? && !@subject.frozen?
+      @errors << "did not destroy instance" if destroyed? && !@subject.destroyed?
       @errors
     end
     def softly?
