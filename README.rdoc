@@ -9,12 +9,21 @@ Soft Delete ActiveRecord instances.
 
   blog = Blog.create :name => 'foo'
   blog.destroy  #soft destroy the record
-  blog.destroy! #hard destroy the record
+  
+  # query databsae for results including soft-deleted objects
+  deleted_blog = Blog.with_deleted do
+    Blog.find blog.id
+  end
+    
+  deleted_blog.destroy! #hard destroy the record
 
 == Features
 
+* Simple configuration
+* Preserves existing ActiveRecord API.  No magical new API's to use when you want to soft delete a record
 * Supports soft-destroying and hard-destroying to associations marked as :dependent => :destroy
 * Triggers destroy callbacks during soft-destroy
+* Support for retrieving soft-deleted records
 * Supports hard and soft delete
 
 == Contributing
