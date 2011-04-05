@@ -31,7 +31,7 @@ class TestDeleteParanoid < Test::Unit::TestCase
     setup do
       @blog = Blog.create! :title => 'foo'
     end
-    context 'when destroying instance' do
+    context 'when destroying instance with instance.destroy' do
       setup do
         @now = Time.now.utc
         Timecop.travel @now do
@@ -49,7 +49,7 @@ class TestDeleteParanoid < Test::Unit::TestCase
         assert_equal @now.to_i, blog.deleted_at.to_i
       end
     end
-    context 'when destroying instance with destroy_all' do
+    context 'when destroying instance with Class.destroy_all' do
       setup do
         Blog.destroy_all :id => @blog.id
       end
@@ -66,17 +66,21 @@ class TestDeleteParanoid < Test::Unit::TestCase
         end
       end
     end
-    context "when destroying instance with delete_all!" do
+    context "when destroying instance with Class.delete_all!" do
       setup do
-        @blog = Blog.create! :title => 'foo'
         Blog.where({:id => @blog.id}).delete_all!
       end
       should_hard_destroy :blog
     end
-    context "when destroying instance with delete!" do
+    context "when destroying instance with Class.delete!" do
       setup do
-        @blog = Blog.create! :title => 'foo'
         Blog.delete! @blog.id
+      end
+      should_hard_destroy :blog
+    end
+    context 'when destroying instance with instance.destroy!' do
+      setup do
+        @blog.destroy!
       end
       should_hard_destroy :blog
     end
