@@ -45,13 +45,17 @@ module DeleteParanoid
     # permenantly delete this specific instance from the database
     def destroy!
       result = destroy
-      self.class.delete! self.id
+      self.class.with_deleted do
+        self.class.delete! self.id
+      end
       result
     end
     # permenantly delete this specific instance from the database
     def delete!
       result = delete
-      self.class.delete! self.id
+      self.class.with_deleted do
+        self.class.delete! self.id
+      end
       result
     end
   end
