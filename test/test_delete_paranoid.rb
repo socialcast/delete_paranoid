@@ -83,6 +83,7 @@ class TestDeleteParanoid < Test::Unit::TestCase
         @blog.destroy!
       end
       should_hard_destroy :blog
+      should_trigger_destroy_callbacks :blog
     end
     context 'when destroying instance with instance.delete!' do
       setup do
