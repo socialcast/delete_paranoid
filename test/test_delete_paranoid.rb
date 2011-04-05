@@ -15,7 +15,9 @@ class TestDeleteParanoid < Test::Unit::TestCase
   end
   
   context 'with paranoid class' do
-
+    should 'be paranoid' do
+      assert Blog.paranoid?
+    end
     context 'when on instance destroyed softly' do
       setup do
         @blog = Blog.create! :title => 'foo'
