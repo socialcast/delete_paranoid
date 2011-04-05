@@ -17,6 +17,7 @@ module DeleteParanoid
       default_scope where(:deleted_at => nil)
 
       extend DeleteParanoid::ClassMethods
+      include DeleteParanoid::InstanceMethods
     end
 
     def paranoid?
@@ -37,6 +38,25 @@ module DeleteParanoid
     end
     def paranoid?
       true
+    end
+  end
+
+  module InstanceMethods
+    # permenantly delete this specific instance from the database
+    def destroy!
+      result = destroy
+      self.class.with_deleted do
+        self.class.delete! self.id
+      end
+      result
+    end
+    # permenantly delete this specific instance from the database
+    def delete!
+      result = delete
+      self.class.with_deleted do
+        self.class.delete! self.id
+      end
+      result
     end
   end
 end
