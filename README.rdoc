@@ -10,6 +10,8 @@ Soft Delete ActiveRecord instances.
   blog = Blog.create :name => 'foo'
   blog.destroy #soft delete the record
 
+  Blog.delete! blog.id #hard delete the record
+
 == Features
 
 == Contributing
