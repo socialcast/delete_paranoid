@@ -1,27 +1,6 @@
 require File.join(File.dirname(__FILE__), 'helper')
 
 class TestDeleteParanoid < Test::Unit::TestCase
-  class Blog < ActiveRecord::Base
-    has_many :comments, :dependent => :destroy
-    has_many :links, :dependent => :destroy
-    acts_as_paranoid
-    attr_accessible :title
-    include CallbackMatcher::ActiveRecordHooks
-  end
-
-  class Comment < ActiveRecord::Base
-    acts_as_paranoid
-    attr_accessible :text
-    belongs_to :blog
-    include CallbackMatcher::ActiveRecordHooks
-  end
-
-  class Link < ActiveRecord::Base
-    belongs_to :blog
-    attr_accessible :name
-    include CallbackMatcher::ActiveRecordHooks
-  end
-
   context 'with non-paranoid activerecord class' do
     should 'not be paranoid' do
       assert !Link.paranoid?

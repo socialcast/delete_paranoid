@@ -16,9 +16,9 @@ require 'timecop'
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 require 'delete_paranoid'
-require 'database_setup'
 require 'matchers/destroy_matcher'
 require 'matchers/callback_matcher'
+require 'database_setup'
 
 class Test::Unit::TestCase
   extend DestroyMatcher::MatcherMethods

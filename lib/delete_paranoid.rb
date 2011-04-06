@@ -5,8 +5,11 @@ module ActiveRecord
   class Relation
     alias_method :delete_all!, :delete_all
     def delete_all(conditions = nil)
-      delete_all!(conditions) unless @klass.paranoid?
-      update_all({:deleted_at => Time.now.utc}, conditions)
+      if @klass.paranoid?
+        update_all({:deleted_at => Time.now.utc}, conditions)
+      else
+        delete_all!(conditions)
+      end
     end
   end
 end
