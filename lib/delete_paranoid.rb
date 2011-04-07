@@ -1,66 +1,67 @@
+require 'active_support/all'
 require 'active_record'
+
+module ActiveRecord
+  class Relation
+    alias_method :delete_all!, :delete_all
+    def delete_all(conditions = nil)
+      if @klass.paranoid?
+        update_all({:deleted_at => Time.now.utc}, conditions)
+      else
+        delete_all!(conditions)
+      end
+    end
+  end
+end
 
 module DeleteParanoid
   module ActiveRecordExtensions
     def acts_as_paranoid
-      class << self
-        alias_method :destroy!, :destroy
-        alias_method :delete!, :delete
-        alias_method :delete_all!, :delete_all
-      end
-      alias_method :delete!, :delete
-      alias_method :destroy!, :destroy
       default_scope where(:deleted_at => nil)
+
       extend DeleteParanoid::ClassMethods
-      include DeleteParanoid::InstanceMethods  
+      include DeleteParanoid::InstanceMethods
     end
-    
+
     def paranoid?
-      self.included_modules.include?(InstanceMethods)
+      false
     end
   end
-  
-  module ClassMethods    
+
+  module ClassMethods
+    # permenantly delete the record from the database
+    def delete!(id_or_array)
+      where(self.primary_key => id_or_array).delete_all!
+    end
+    # allow for queries within block to find soft deleted records
     def with_deleted
       self.unscoped do
         yield
       end
     end
-    
-    def delete_all(conditions = nil)
-      update_all ["deleted_at = ?", Time.now.utc], conditions
-    end
-
-    def destroy_all!(conditions = nil)
-      if conditions
-        where(conditions).destroy_all!
-      else
-        to_a.each {|object| object.destroy! }.tap { reset }
-      end
+    def paranoid?
+      true
     end
   end
-  
+
   module InstanceMethods
-    
-    def self.included(base)
-      base.class_eval do
-        alias_method_chain :destroy!, :paranoid_dependents
+    # permenantly delete this specific instance from the database
+    def destroy!
+      enable_hard_dependent_destroy_callbacks
+      result = destroy
+      self.class.with_deleted do
+        self.class.delete! self.id
       end
+      result
     end
-    
-    def destroy
-      if persisted?
-        with_transaction_returning_status do
-          _run_destroy_callbacks do
-            self.deleted_at = Time.now.utc
-            self.class.update_all ["deleted_at = ?", self.deleted_at ], { :id => self.id }
-            @destroyed = true
-          end
-        end
-      else
-        @destroyed = true
+
+    # permenantly delete this specific instance from the database
+    def delete!
+      result = delete
+      self.class.with_deleted do
+        self.class.delete! self.id
       end
-      freeze
+      result
     end
     
     def destroy_with_paranoid_dependents!

@@ -11,10 +11,13 @@ require 'test/unit'
 require 'shoulda'
 require 'mocha'
 require "ruby-debug"
+require 'timecop'
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 require 'delete_paranoid'
+require 'matchers/destroy_matcher'
+require 'matchers/callback_matcher'
 require 'database_setup'
 require 'matchers/callback_matcher'
 require 'matchers/destroy_matcher'
@@ -23,5 +26,3 @@ class Test::Unit::TestCase
   extend DestroyMatcher::MatcherMethods
   extend CallbackMatcher::MatcherMethods
 end
-
-

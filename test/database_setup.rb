@@ -16,7 +16,28 @@ ActiveRecord::Schema.define(:version => 2) do
   end
   create_table :links, :force => true do |t|
     t.column :blog_id, :integer
-    t.column :url, :string
+    t.column :name, :string
   end
+end
+
+class Blog < ActiveRecord::Base
+  has_many :comments, :dependent => :destroy
+  has_many :links, :dependent => :destroy
+  acts_as_paranoid
+  attr_accessible :title
+  include CallbackMatcher::ActiveRecordHooks
+end
+
+class Comment < ActiveRecord::Base
+  acts_as_paranoid
+  attr_accessible :text
+  belongs_to :blog
+  include CallbackMatcher::ActiveRecordHooks
+end
+
+class Link < ActiveRecord::Base
+  belongs_to :blog
+  attr_accessible :name
+  include CallbackMatcher::ActiveRecordHooks
 end
 
