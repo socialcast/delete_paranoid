@@ -17,6 +17,7 @@ class TestDeleteParanoid < Test::Unit::TestCase
   context 'with instance of paranoid class' do
     setup do
       @blog = Blog.create! :title => 'foo'
+      @blog.reset_callback_flags!
     end
     context 'when destroying instance with instance.destroy' do
        subject do
@@ -74,6 +75,7 @@ class TestDeleteParanoid < Test::Unit::TestCase
     setup do
       @blog = Blog.create!(:title => 'foo')
       @comment = @blog.comments.create! :text => 'bar'
+      @comment.reset_callback_flags!
     end
     context 'when destroying parent paranoid instance with delete' do
       subject do
@@ -91,7 +93,7 @@ class TestDeleteParanoid < Test::Unit::TestCase
       end
   
       should_not destroy_subject
-        should_not trigger_callbacks
+      should_not trigger_callbacks
     end
     context 'when destroying parent paranoid instance with destroy' do
       subject do
@@ -135,6 +137,7 @@ class TestDeleteParanoid < Test::Unit::TestCase
     setup do
       @blog = Blog.create!(:title => 'foo')
       @link = @blog.links.create! :name => 'bar'
+      @link.reset_callback_flags!
     end
     context 'when destroying parent paranoid instance with destroy' do
       subject do

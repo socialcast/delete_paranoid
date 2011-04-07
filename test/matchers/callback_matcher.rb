@@ -88,7 +88,11 @@ module DeleteParanoid
       @callback_types.each do |ct|
         CALLBACK_EVENTS.each do |ce|
           called = @subject.send(:"called_#{ce}_#{ct}?")
-          result &&= (called || @any_callbacks)
+          if @any_callbacks
+            result ||= called
+          else
+            result &&= called
+          end
           @expectations << "#{ce}_#{ct} callbacks to be triggered"
         end
       end
