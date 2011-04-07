@@ -19,10 +19,8 @@ require 'delete_paranoid'
 require 'matchers/destroy_matcher'
 require 'matchers/callback_matcher'
 require 'database_setup'
-require 'matchers/callback_matcher'
-require 'matchers/destroy_matcher'
 
 class Test::Unit::TestCase
-  extend DestroyMatcher::MatcherMethods
-  extend CallbackMatcher::MatcherMethods
+  extend DeleteParanoid::CallbackMatcher::MatcherMethods
+  extend DeleteParanoid::DestroyMatcher::MatcherMethods
 end

@@ -11,6 +11,19 @@ module ActiveRecord
         delete_all!(conditions)
       end
     end
+    def destroy_all!(conditions = nil)
+      if @klass.paranoid?
+        @klass.with_deleted do
+          where(conditions).each do |record|
+            record.destroy!
+          end
+        end
+      else
+        where(conditions).each do |record|
+          record.destroy
+        end
+      end
+    end
   end
 end
 
@@ -29,7 +42,11 @@ module DeleteParanoid
   end
 
   module ClassMethods
-    # permenantly delete the record from the database
+    # permenantly destroy the record(s) from the database
+    def destroy!(id_or_array)
+      where(self.primary_key => id_or_array).destroy_all!
+    end
+    # permenantly delete the record(s) from the database
     def delete!(id_or_array)
       where(self.primary_key => id_or_array).delete_all!
     end
@@ -45,30 +62,26 @@ module DeleteParanoid
   end
 
   module InstanceMethods
-    # permenantly delete this specific instance from the database
+    # permenantly destroy this record and all dependent records from the database
     def destroy!
       enable_hard_dependent_destroy_callbacks
-      result = destroy
-      self.class.with_deleted do
-        self.class.delete! self.id
+      destroy.tap do |result|
+        self.class.with_deleted do
+          self.class.delete! self.id
+        end
       end
-      result
     end
 
-    # permenantly delete this specific instance from the database
+    # permenantly delete this specific record from the database
     def delete!
-      result = delete
-      self.class.with_deleted do
-        self.class.delete! self.id
+      delete.tap do |result|
+        self.class.with_deleted do
+          self.class.delete! self.id
+        end
       end
-      result
     end
     
-    def destroy_with_paranoid_dependents!
-      enable_hard_dependent_destroy_callbacks
-      destroy_without_paranoid_dependents!
-    end
-    
+    # softly delete this record from the database
     def delete
       if persisted?
         self.deleted_at = Time.now.utc
@@ -79,34 +92,54 @@ module DeleteParanoid
     end
     
   private
+  
+    def dependent_destroy_reflections
+      self.class.reflect_on_all_associations.select do |reflection|
+        reflection.klass.paranoid? and reflection.options[:dependent] == :destroy
+      end
+    end
+    
+    def replace_single_dependent_callback(reflection)
+      (class << self; self; end).class_eval do
+        define_method(:"#{reflection.macro}_dependent_destroy_for_#{reflection.name}") do 
+          reflection.klass.with_deleted do
+            association = send(reflection.name)
+            association.destroy! if association
+          end
+        end
+      end
+    end
+    
+    def replace_multiple_dependent_callback(reflection)
+      (class << self; self; end).class_eval do
+        define_method(:"#{reflection.macro}_dependent_destroy_for_#{reflection.name}") do 
+          reflection.klass.with_deleted do
+            send(reflection.name).each do |dependent|
+              disable_dependent_counter_cache(dependent)
+              dependent.destroy!
+            end
+          end
+        end
+      end
+    end
+  
+    def disable_dependent_counter_cache(dependent)
+      counter_method = :"belongs_to_counter_cache_before_destroy_for_#{self.class.name.downcase}"
+      if dependent.respond_to? counter_method
+        dependent
+        class << dependent
+          self
+        end.send(:define_method, counter_method, lambda {})
+      end
+    end
+  
     def enable_hard_dependent_destroy_callbacks
-      eigenclass = class << self; self; end
-      self.class.reflect_on_all_associations.each do |reflection|
-        next unless reflection.klass.paranoid?
-        next unless reflection.options[:dependent] == :destroy
+      dependent_destroy_reflections.each do |reflection|
         case reflection.macro
         when :has_one, :belongs_to
-          eigenclass.class_eval do
-            define_method(:"#{reflection.macro}_dependent_destroy_for_#{reflection.name}") do 
-              association = send(reflection.name)
-              association.destroy! if association
-            end
-          end
+          replace_single_dependent_callback(reflection)
         when :has_many
-          eigenclass.class_eval do
-            define_method(:"has_many_dependent_destroy_for_#{reflection.name}") do 
-              send(reflection.name).each do |o|
-                # No point in executing the counter update since we're going to destroy the parent anyway
-                counter_method = ('belongs_to_counter_cache_before_destroy_for_' + self.class.name.downcase).to_sym
-                if(o.respond_to? counter_method) then
-                  class << o
-                    self
-                  end.send(:define_method, counter_method, Proc.new {})
-                end
-                o.destroy!
-              end
-            end
-          end
+          replace_multiple_dependent_callback(reflection)
         end
       end
     end
