@@ -4,12 +4,6 @@ module DeleteParanoid
   class DestroyMatcher
   
     module MatcherMethods
-      def soft_destroy
-        DestroyMatcher.new :soft
-      end
-      def hard_destroy
-        DestroyMatcher.new :hard
-      end
       def destroy_subject
         DestroyMatcher.new
       end
