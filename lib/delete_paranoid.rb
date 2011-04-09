@@ -126,7 +126,6 @@ module DeleteParanoid
     def disable_dependent_counter_cache(dependent)
       counter_method = :"belongs_to_counter_cache_before_destroy_for_#{self.class.name.downcase}"
       if dependent.respond_to? counter_method
-        dependent
         class << dependent
           self
         end.send(:define_method, counter_method, lambda {})
