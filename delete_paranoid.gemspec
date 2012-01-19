@@ -19,7 +19,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency(%q<mocha>, [">= 0"])
   s.add_development_dependency(%q<bundler>, [">= 0"])
   s.add_development_dependency(%q<sqlite3-ruby>, ["~> 1.3.2"])
-  s.add_development_dependency(%q<ruby-debug>, [">= 0"])
   s.add_development_dependency(%q<timecop>, [">= 0"])
 
   s.files         = `git ls-files`.split("\n")
