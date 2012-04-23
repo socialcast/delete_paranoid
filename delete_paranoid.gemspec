@@ -8,13 +8,20 @@ Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Ryan Sonnek"]
   s.email       = ["ryan@codecrate.com"]
-  s.homepage    = "http://github.com/wireframe/delete_paranoid"
+  s.homepage    = "http://github.com/socialcast/delete_paranoid"
   s.summary     = %q{soft delete Rails ActiveRecord objects}
   s.description = %q{flag database records as deleted and hide them from subsequent queries}
 
   s.rubyforge_project = "delete_paranoid"
 
-  s.add_runtime_dependency(%q<activerecord>, ["~> 3.0"])
+  %w[activerecord].each do |lib|
+    dep = case ENV[lib]
+          when 'stable', nil then nil
+          when /(\d+\.)+\d+/ then ["~> " + ENV[lib]]
+          else [">= 3.0"]
+          end
+    s.add_runtime_dependency(lib, dep)
+  end
   s.add_development_dependency(%q<shoulda>, [">= 0"])
   s.add_development_dependency(%q<mocha>, [">= 0"])
   s.add_development_dependency(%q<bundler>, [">= 0"])
