@@ -23,7 +23,6 @@ Gem::Specification.new do |s|
     puts "#{lib} #{dep}"
     s.add_runtime_dependency(lib, dep)
   end
-  s.add_runtime_dependency(%q<activerecord>, [">= 3.0"])
   s.add_development_dependency(%q<shoulda>, [">= 0"])
   s.add_development_dependency(%q<mocha>, [">= 0"])
   s.add_development_dependency(%q<bundler>, [">= 0"])
