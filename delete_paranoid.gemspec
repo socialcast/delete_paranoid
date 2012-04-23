@@ -20,6 +20,7 @@ Gem::Specification.new do |s|
           when /(\d+\.)+\d+/ then "~> " + ENV[lib].sub("#{lib}-", '')
           else ">= 3.0"
           end
+    puts "#{lib} #{dep}"
     s.add_runtime_dependency(lib, dep)
   end
   s.add_runtime_dependency(%q<activerecord>, [">= 3.0"])
