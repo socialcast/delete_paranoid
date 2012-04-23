@@ -14,7 +14,15 @@ Gem::Specification.new do |s|
 
   s.rubyforge_project = "delete_paranoid"
 
-  s.add_runtime_dependency(%q<activerecord>, ["~> 3.0"])
+  %w[activerecord].each do |lib|
+    dep = case ENV[lib]
+          when 'stable', nil then nil
+          when /(\d+\.)+\d+/ then "~> " + ENV[lib].sub("#{lib}-", '')
+          else ">= 3.0"
+          end
+    s.add_runtime_dependency(lib, dep)
+  end
+  s.add_runtime_dependency(%q<activerecord>, [">= 3.0"])
   s.add_development_dependency(%q<shoulda>, [">= 0"])
   s.add_development_dependency(%q<mocha>, [">= 0"])
   s.add_development_dependency(%q<bundler>, [">= 0"])

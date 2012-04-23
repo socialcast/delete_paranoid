@@ -1,3 +1,5 @@
+[![Build Status](https://secure.travis-ci.org/socialcast/delete_paranoid.png?branch=master)](http://travis-ci.org/socialcast/delete_paranoid)
+
 # delete_paranoid
 
 Soft Delete ActiveRecord instances.
