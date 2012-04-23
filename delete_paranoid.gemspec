@@ -17,8 +17,8 @@ Gem::Specification.new do |s|
   %w[activerecord].each do |lib|
     dep = case ENV[lib]
           when 'stable', nil then nil
-          when /(\d+\.)+\d+/ then "~> " + ENV[lib].sub("#{lib}-", '')
-          else ">= 3.0"
+          when /(\d+\.)+\d+/ then ["~> " + ENV[lib].sub("#{lib}-", '')]
+          else [">= 3.0"]
           end
     puts "#{lib} #{dep}"
     s.add_runtime_dependency(lib, dep)
