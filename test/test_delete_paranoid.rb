@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), 'helper')
+require File.join(File.expand_path(File.dirname(__FILE__)), 'helper.rb')
 
 class TestDeleteParanoid < Test::Unit::TestCase
   context 'with non-paranoid activerecord class' do
@@ -22,7 +22,6 @@ class TestDeleteParanoid < Test::Unit::TestCase
         @blog.destroy
         @blog
       end
-      
       should destroy_subject.softly.and_freeze.and_mark_as_destroyed
       should trigger_callbacks_for :destroy
       should_not trigger_callbacks_for :update
@@ -34,32 +33,32 @@ class TestDeleteParanoid < Test::Unit::TestCase
       end
       should destroy_subject.softly
     end
-    context "when destroying instance with Class.delete_all!" do
+    context "when destroying instance with Class.delete_all_permanently" do
       subject do
-        Blog.where({:id => @blog.id}).delete_all!
+        Blog.where({:id => @blog.id}).delete_all_permanently
         @blog
       end
       should destroy_subject
     end
-    context "when destroying instance with Class.delete!" do
+    context "when destroying instance with Class.delete_permanently" do
       subject do
-        Blog.delete! @blog.id
+        Blog.delete_permanently @blog.id
         @blog
       end
       should destroy_subject
     end
-    context 'when destroying instance with instance.destroy!' do
+    context 'when destroying instance with instance.destroy_permanently' do
       subject do
-        @blog.destroy!
+        @blog.destroy_permanently
         @blog
       end
       should destroy_subject
       should trigger_callbacks_for :destroy
       should_not trigger_callbacks_for :update
     end
-    context 'when destroying instance with instance.delete!' do
+    context 'when destroying instance with instance.delete_permanently' do
       subject do
-        @blog.delete!
+        @blog.delete_permanently
         @blog
       end
       should destroy_subject
@@ -81,9 +80,9 @@ class TestDeleteParanoid < Test::Unit::TestCase
       should trigger_callbacks_for :destroy
       #should_not trigger_callbacks_for :update
     end
-    context 'when destroying parent paranoid instance with delete_all!' do
+    context 'when destroying parent paranoid instance with delete_all_permanently' do
        subject do
-         Blog.where({:id => @blog.id}).delete_all!
+         Blog.where({:id => @blog.id}).delete_all_permanently
          @comment
        end
 
@@ -106,9 +105,9 @@ class TestDeleteParanoid < Test::Unit::TestCase
       should trigger_callbacks_for :destroy
       #should_not trigger_callbacks_for :update
     end
-    context 'when destroying parent paranoid instance with delete_all!' do
+    context 'when destroying parent paranoid instance with delete_all_permanently' do
        subject do
-         Blog.where({:id => @blog.id}).delete_all!
+         Blog.where({:id => @blog.id}).delete_all_permanently
          @link
        end
 
