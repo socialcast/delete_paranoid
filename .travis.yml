@@ -1,8 +1,7 @@
 rvm:
   - 1.9.3
 env:
-  - "activerecord=3.0.0"
   - "activerecord=3.1.0"
   - "activerecord=3.2.0"
-  - "activerecord=stable"
+  - "activerecord=4.0.0"
   - "activerecord=4.1.0.beta1"
