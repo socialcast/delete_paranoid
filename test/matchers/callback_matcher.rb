@@ -1,18 +1,18 @@
 
 class CallbackMatcher
-  CALLBACK_EVENTS = [:before, :after, :after_commit_on]
-  CALLBACK_TYPES = [:create, :update, :destroy, :save]
-  
+  CALLBACK_EVENTS = [:before, :after]
+  CALLBACK_TYPES = [:create, :update, :destroy, :save, :commit]
+
   module MatcherMethods
-    
+
     def trigger_callbacks_for(callback_types)
       CallbackMatcher.new Array.wrap(callback_types)
     end
-    
+
   end
-  
+
   module ActiveRecordHooks
-    
+
     def self.included(base)
       base.class_eval do
         class << self
@@ -21,6 +21,7 @@ class CallbackMatcher
         @callback_tester_attrs = []
         CALLBACK_EVENTS.each do |ce|
           CALLBACK_TYPES.each do |ct|
+            next if ce == :before && ct == :commit
             callback_name = :"#{ce}_#{ct}"
             callback_attr = :"called_#{callback_name}"
             callback_method, has_on_option = (ce.to_s =~ /_on/ ? [ce.to_s.gsub('_on',''), true] : [callback_name, false]) 
@@ -29,7 +30,7 @@ class CallbackMatcher
             send( callback_method, (has_on_option ? {:on => ct} : {})) {
               instance_variable_set(:"@#{callback_attr}", true)
             }
-          
+
             define_method :"#{callback_attr}?" do
               instance_variable_get(:"@#{callback_attr}")
             end
@@ -51,27 +52,27 @@ class CallbackMatcher
     end
 
   end
-  
+
   def initialize(callback_types)
     @callback_types = callback_types
   end
-  
+
   def failure_message
     "Expected #{@subject} #{expectation}:"
   end
-  
+
   def negative_failure_message
     "Did not expect #{@subject} #{expectation}:"
   end
-  
+
   def description
     "check that #{@callback_types.join(', ')} callbacks were called"
   end
-  
+
   def expectation
     @expectations.join("\n")
   end
-  
+
   def matches?(subject)
     @subject = subject
     @expectations = []
@@ -85,6 +86,6 @@ class CallbackMatcher
     end
     result
   end
-  
+
 end
 
