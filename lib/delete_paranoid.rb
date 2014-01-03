@@ -4,11 +4,11 @@ require 'active_record'
 module ActiveRecord
   class Relation
     alias_method :delete_all_permanently, :delete_all
-    def delete_all(conditions = nil)
+    def delete_all
       if @klass.paranoid?
-        update_all({:deleted_at => Time.now.utc}, conditions)
+        update_all(:deleted_at => Time.now.utc)
       else
-        delete_all_permanently(conditions)
+        delete_all_permanently
       end
     end
   end
