@@ -1,0 +1,4 @@
+sqlite:
+  adapter: sqlite3
+  database: spec/delete_paranoid.sqlite3
+

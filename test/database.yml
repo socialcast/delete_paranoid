@@ -1,4 +1,0 @@
-sqlite:
-  adapter: sqlite3
-  database: test/delete_paranoid.sqlite3
-
