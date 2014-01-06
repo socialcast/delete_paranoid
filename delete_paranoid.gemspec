@@ -6,8 +6,8 @@ Gem::Specification.new do |s|
   s.name        = "delete_paranoid"
   s.version     = DeleteParanoid::VERSION
   s.platform    = Gem::Platform::RUBY
-  s.authors     = ["Ryan Sonnek"]
-  s.email       = ["ryan@codecrate.com"]
+  s.authors     = ["Ryan Sonnek", "developers@socialcast.com"]
+  s.email       = ["developers@socialcast.com"]
   s.homepage    = "http://github.com/socialcast/delete_paranoid"
   s.summary     = %q{soft delete Rails ActiveRecord objects}
   s.description = %q{flag database records as deleted and hide them from subsequent queries}
