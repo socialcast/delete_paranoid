@@ -1,7 +1,1 @@
 rvm use "ruby-1.9.3-p484@delete_paranoid" --create
-if ! command -v bundle ; then
-  gem install bundler
-fi
-export RUBY_HEAP_MIN_SLOTS=500000
-export RUBY_GC_MALLOC_LIMIT=100000000
-export RUBY_FREE_MIN=100000
