@@ -75,6 +75,24 @@ describe DeleteParanoid do
         expect(Blog.where(:id => blog.id)).to exist
       end
     end
+    context 'when destroying instance with instance.destroy_permanently!' do
+      before { blog.destroy_permanently! }
+      it_behaves_like "permanently-deleted"
+      it do
+        is_expected.to trigger_callbacks_for :destroy
+        is_expected.not_to trigger_callbacks_for :update
+      end
+    end
+    context 'when destroying instance with instance.destroy_permanently! and a before_destroy callback returns false' do
+      before { expect(blog).to receive(:before_destroy_callback) { throw :abort } }
+      it do
+        expect do
+          blog.destroy_permanently!
+        end.to raise_error ActiveRecord::RecordNotDestroyed
+
+        expect(Blog.where(:id => blog.id)).to exist
+      end
+    end
     context 'when destroying instance with instance.delete_permanently' do
       before { blog.delete_permanently }
       it_behaves_like "permanently-deleted"
