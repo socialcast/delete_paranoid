@@ -4,28 +4,28 @@ describe DeleteParanoid do
 
   shared_examples_for "soft-deleted" do
     it do
-      subject.class.where(:id => subject.id).should_not exist
+      expect(subject.class.where(:id => subject.id)).not_to exist
       subject.class.with_deleted do
-        subject.class.where(:id => subject.id).should exist
+        expect(subject.class.where(:id => subject.id)).to exist
       end
     end
   end
 
   shared_examples_for "permanently-deleted" do
     it do
-      subject.class.where(:id => subject.id).should_not exist
+      expect(subject.class.where(:id => subject.id)).not_to exist
       subject.class.with_deleted do
-        subject.class.where(:id => subject.id).should_not exist
+        expect(subject.class.where(:id => subject.id)).not_to exist
       end
     end
   end
 
   context 'with non-paranoid activerecord class' do
-    it { Link.should_not be_paranoid }
+    it { expect(Link).not_to be_paranoid }
   end
 
   context 'with paranoid activerecord class' do
-    it { Blog.should be_paranoid }
+    it { expect(Blog).to be_paranoid }
   end
 
   let!(:blog) { Blog.create! :title => 'foo' }
@@ -35,10 +35,10 @@ describe DeleteParanoid do
     context 'when destroying instance with instance.destroy' do
       before { blog.destroy }
       it do
-        should be_destroyed
-        should be_frozen
-        should trigger_callbacks_for :destroy
-        should_not trigger_callbacks_for :update
+        is_expected.to be_destroyed
+        is_expected.to be_frozen
+        is_expected.to trigger_callbacks_for :destroy
+        is_expected.to_not trigger_callbacks_for :update
       end
       it_behaves_like "soft-deleted"
     end
@@ -61,16 +61,16 @@ describe DeleteParanoid do
       before { blog.destroy_permanently }
       it_behaves_like "permanently-deleted"
       it do
-        should trigger_callbacks_for :destroy
-        should_not trigger_callbacks_for :update
+        is_expected.to trigger_callbacks_for :destroy
+        is_expected.not_to trigger_callbacks_for :update
       end
     end
     context 'when destroying instance with instance.delete_permanently' do
       before { blog.delete_permanently }
       it_behaves_like "permanently-deleted"
       it do
-        should_not trigger_callbacks_for :destroy
-        should_not trigger_callbacks_for :update
+        is_expected.not_to trigger_callbacks_for :destroy
+        is_expected.not_to trigger_callbacks_for :update
       end
     end
   end
@@ -82,19 +82,19 @@ describe DeleteParanoid do
     context 'when destroying parent paranoid instance with destroy' do
       before { blog.destroy }
       it do
-        should be_destroyed
-        should be_frozen
-        should trigger_callbacks_for :destroy
-        should_not trigger_callbacks_for :update
+        is_expected.to be_destroyed
+        is_expected.to be_frozen
+        is_expected.to trigger_callbacks_for :destroy
+        is_expected.not_to trigger_callbacks_for :update
       end
     end
     context 'when destroying parent paranoid instance with delete_all_permanently' do
       before { Blog.where(:id => blog.id).delete_all_permanently }
       it do
-        should_not be_destroyed
-        should_not be_frozen
-        should_not trigger_callbacks_for :destroy
-        Comment.where(:id => comment.id).should exist
+        is_expected.not_to be_destroyed
+        is_expected.not_to be_frozen
+        is_expected.not_to trigger_callbacks_for :destroy
+        expect(Comment.where(:id => comment.id)).to exist
       end
     end
   end
@@ -106,21 +106,21 @@ describe DeleteParanoid do
     context 'when destroying parent paranoid instance with destroy' do
       before { blog.destroy }
       it do
-        should be_destroyed
-        should be_frozen
-        should trigger_callbacks_for :destroy
-        should_not trigger_callbacks_for :update
-        Link.where(:id => link.id).should_not exist
+        is_expected.to be_destroyed
+        is_expected.to be_frozen
+        is_expected.to trigger_callbacks_for :destroy
+        is_expected.not_to trigger_callbacks_for :update
+        expect(Link.where(:id => link.id)).not_to exist
       end
     end
 
     context 'when destroying parent paranoid instance with delete_all_permanently' do
       before { Blog.where(:id => blog.id).delete_all_permanently }
       it do
-        should_not be_destroyed
-        should_not be_frozen
-        should_not trigger_callbacks_for :destroy
-        Link.where(:id => link.id).should exist
+        is_expected.not_to be_destroyed
+        is_expected.not_to be_frozen
+        is_expected.not_to trigger_callbacks_for :destroy
+        expect(Link.where(:id => link.id)).to exist
       end
     end
   end

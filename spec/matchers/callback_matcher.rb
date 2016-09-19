@@ -45,44 +45,40 @@ end
 
 require 'rspec/matchers'
 
-RSpec::Matchers.define :trigger_callbacks_for do |types|
-
-  check_for_match = ->(model_instance, types) {
+RSpec::Matchers.define :trigger_callbacks_for do |expected_callback_type|
+  def check_for_match(model_instance, expected_callback_type)
     @called = []
     @not_called = []
-    Array.wrap(types).each do |ct|
-      CallbackMatcher::CALLBACK_EVENTS.each do |ce|
-        callback_name = "#{ce}_#{ct}"
-        result = model_instance.send("called_#{callback_name}".to_sym)
-        @called << callback_name if result
-        @not_called << callback_name unless result
-      end
+    CallbackMatcher::CALLBACK_EVENTS.each do |ce|
+      callback_name = "#{ce}_#{expected_callback_type}"
+      result = model_instance.send("called_#{callback_name}".to_sym)
+      @called << callback_name if result
+      @not_called << callback_name unless result
     end
-  }
+  end
 
-  match_for_should do |model_instance|
-    check_for_match.call(model_instance, types)
+  match do |model_instance|
+    check_for_match(model_instance, expected_callback_type)
     result = true
     result = false unless @called.present?
     result = false if @not_called.present?
     result
   end
 
-  match_for_should_not do |model_instance|
-    check_for_match.call(model_instance, types)
+  match_when_negated do |model_instance|
+    check_for_match(model_instance, expected_callback_type)
     result = true
     result = false unless @not_called.present?
     result = false if @called.present?
     result
   end
 
-  failure_message_for_should do |actual|
-    ["Called:\t#{@called.join("\n\t")}", "Not called:\t#{@called.join("\n\t")}"].join("\n")
+  failure_message do |actual|
+    ["Called:\t#{@called.join("\n\t")}", "Not called:\t#{@not_called.join("\n\t")}"].join("\n")
   end
 
-  failure_message_for_should_not do |actual|
-    ["Called:\t#{@called.join("\n\t")}", "Not called:\t#{@called.join("\n\t")}"].join("\n")
+  failure_message_when_negated do |actual|
+    ["Called:\t#{@called.join("\n\t")}", "Not called:\t#{@not_called.join("\n\t")}"].join("\n")
   end
-
 end
 

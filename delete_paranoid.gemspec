@@ -23,7 +23,7 @@ Gem::Specification.new do |s|
           end
     s.add_runtime_dependency(lib, dep)
   end
-  s.add_development_dependency(%q<rspec>, [">= 0"])
+  s.add_development_dependency(%q<rspec>, [">= 3.5"])
   s.add_development_dependency(%q<bundler>, [">= 0"])
   s.add_development_dependency(%q<sqlite3-ruby>, ["~> 1.3.2"])
   s.add_development_dependency(%q<rake>, [">= 0.9.2.2"])
