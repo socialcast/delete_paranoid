@@ -24,13 +24,12 @@ class CallbackMatcher
             }
           end
         end
-        alias_method_chain :initialize, :callback_init
       end
     end
 
-    def initialize_with_callback_init(*args)
+    def initialize(*args)
       reset_callback_flags!
-      initialize_without_callback_init(*args)
+      super
     end
 
     def reset_callback_flags!
