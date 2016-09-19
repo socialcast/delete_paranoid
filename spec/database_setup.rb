@@ -23,8 +23,14 @@ end
 class Blog < ActiveRecord::Base
   has_many :comments, :dependent => :destroy
   has_many :links, :dependent => :destroy
+  before_destroy :before_destroy_callback
   acts_as_paranoid
   include CallbackMatcher::ActiveRecordHooks
+
+  private
+
+  def before_destroy_callback
+  end
 end
 
 class Comment < ActiveRecord::Base
