@@ -65,6 +65,16 @@ describe DeleteParanoid do
         is_expected.not_to trigger_callbacks_for :update
       end
     end
+    context 'when destroying instance with instance.destroy_permanently and a before_destroy callback returns false' do
+      before do
+        expect(blog).to receive(:before_destroy_callback) { throw :abort }
+        blog.destroy_permanently
+      end
+      it do
+        is_expected.not_to trigger_callbacks_for :update
+        expect(Blog.where(:id => blog.id)).to exist
+      end
+    end
     context 'when destroying instance with instance.delete_permanently' do
       before { blog.delete_permanently }
       it_behaves_like "permanently-deleted"

@@ -48,6 +48,7 @@ module DeleteParanoid
     # permanently delete this specific instance from the database
     def destroy_permanently
       result = destroy
+      return result unless result
       self.class.with_deleted do
         self.class.delete_permanently self.id
       end
