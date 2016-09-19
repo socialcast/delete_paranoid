@@ -67,7 +67,7 @@ describe DeleteParanoid do
     end
     context 'when destroying instance with instance.destroy_permanently and a before_destroy callback returns false' do
       before do
-        expect(blog).to receive(:before_destroy_callback) { throw :abort }
+        expect(blog).to receive(:before_destroy_callback).and_return false
         blog.destroy_permanently
       end
       it do
@@ -84,7 +84,7 @@ describe DeleteParanoid do
       end
     end
     context 'when destroying instance with instance.destroy_permanently! and a before_destroy callback returns false' do
-      before { expect(blog).to receive(:before_destroy_callback) { throw :abort } }
+      before { expect(blog).to receive(:before_destroy_callback).and_return false }
       it do
         expect do
           blog.destroy_permanently!
