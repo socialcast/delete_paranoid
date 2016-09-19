@@ -25,7 +25,7 @@ class Blog < ActiveRecord::Base
   has_many :links, :dependent => :destroy
   before_destroy :before_destroy_callback
   acts_as_paranoid
-  prepend CallbackMatcher::ActiveRecordHooks
+  include CallbackMatcher::ActiveRecordHooks
 
   private
 
@@ -36,11 +36,11 @@ end
 class Comment < ActiveRecord::Base
   acts_as_paranoid
   belongs_to :blog
-  prepend CallbackMatcher::ActiveRecordHooks
+  include CallbackMatcher::ActiveRecordHooks
 end
 
 class Link < ActiveRecord::Base
   belongs_to :blog
-  prepend CallbackMatcher::ActiveRecordHooks
+  include CallbackMatcher::ActiveRecordHooks
 end
 

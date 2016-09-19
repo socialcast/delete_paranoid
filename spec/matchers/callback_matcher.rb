@@ -4,8 +4,7 @@ class CallbackMatcher
   CALLBACK_TYPES = [:create, :update, :destroy, :save, :commit]
 
   module ActiveRecordHooks
-
-    def self.prepended(base)
+    def self.included(base)
       base.class_eval do
         class_attribute :callback_tester_attrs
         self.callback_tester_attrs = []
@@ -26,20 +25,7 @@ class CallbackMatcher
         end
       end
     end
-
-    def initialize(*args)
-      reset_callback_flags!
-      super
-    end
-
-    def reset_callback_flags!
-      self.class.callback_tester_attrs.each do |attr|
-        send("#{attr}=", false)
-      end
-    end
-
   end
-
 end
 
 require 'rspec/matchers'
