@@ -5,7 +5,7 @@ class CallbackMatcher
 
   module ActiveRecordHooks
 
-    def self.included(base)
+    def self.prepended(base)
       base.class_eval do
         class_attribute :callback_tester_attrs
         self.callback_tester_attrs = []

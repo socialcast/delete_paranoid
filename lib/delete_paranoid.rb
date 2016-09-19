@@ -20,7 +20,7 @@ module DeleteParanoid
       default_scope { where(:deleted_at => nil) }
 
       extend DeleteParanoid::ClassMethods
-      prepend DeleteParanoid::InstanceMethods
+      include DeleteParanoid::InstanceMethods
     end
 
     def paranoid?
